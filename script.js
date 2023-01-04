@@ -566,7 +566,7 @@ window.addEventListener('load', function() {
             } else this.laserAmmoTimer += deltaTime;
 
             //enemy spawns
-            if(this.waveTime < 2 && !this.checkForBoss() && this.waveCount%1 === 0) {
+            if(this.waveTime < 2 && !this.checkForBoss() && this.waveCount%3 === 0 && !this.waveCleared) {
                 this.enemies.push(new Boss(this));
             } else if(this.enemyTimer > this.enemyInterval && (!this.gameOver && this.waveTime > 0)) {
                 let enemyType = Math.random();
@@ -601,7 +601,7 @@ window.addEventListener('load', function() {
                         laser.delete = true;
                         if(enemy.health <= 0) {
                             enemy.delete = true;
-                            if(enemy instanceof Transporter){ //spawning between 3 and 5 smaller enemies if enemy was a transporter
+                            if(enemy instanceof Transporter) { //spawning between 3 and 5 smaller enemies if enemy was a transporter
                                 let enemiesTransported = 3 + Math.floor(Math.random()  * 2);
 
                                 if(enemiesTransported === 3) {
@@ -635,6 +635,10 @@ window.addEventListener('load', function() {
 
                                     }
                                 }
+                            }
+
+                            if(enemy instanceof Boss) {
+                                this.waveCleared = true;
                             }
 
                             if(!this.gameOver && !this.waveCleared) this.score += enemy.score;
