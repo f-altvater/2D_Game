@@ -1,0 +1,75 @@
+upgradeable ship (player)
+    - main weapon / laser
+    - extra weapon / rocket
+    - hitpoints
+    - helper ships
+    - positioned at bottom of screen
+    - moves from left to right and vice versa
+
+enemy classes
+    - main enemy classes - 3 classes
+    - special enemy classes - 3 classes
+        > tank class with just more hp
+        > transporter class which stores up to 5 main enemies
+        > gold digger class with more speed, more fragile and give more resources when defeated
+    - boss enemies spawning at end of every 10 waves
+
+shop
+    - 4 upgradeable things
+    - every upgradeable thing has up to 20 level
+    - every 4 level the visuals should be different
+
+what code structure should I build
+
+    - main ship class (player)
+        > keeping track and applying any upgrades bought
+        > stores information like player hitpoints, position
+        > hitbox
+
+    - parent enemy class
+        > storing if an enemy is dead and should be deleted from any storing array
+        > main updating and drawing function should be present
+
+    - child enemy classes
+        > hitpoints
+        > how much resources they give
+        > damage to player
+        > special info like armor? (would be some multiplicator to damage taken)
+        > travel speed
+        > hitbox
+
+    - weapon classes (2 separate classes)
+        > how much damage is dealt
+        > if armor prevents damage from them
+        > travel speed
+        > hitbox
+
+    - shop
+        > tracking upgrades bought
+        > how much resources are needed for upgrades
+
+    - shop UI
+        > showing upgrades to buy
+        > resources
+        > showing already bought upgrades    
+        
+    - game UI
+        > main handler to show important visuals to player
+        > score
+        > number of wave
+        > boss healthbar
+        > wave timer
+        > ammo states
+        
+    - main game class
+        > dimensions of screen
+        > handling spawns of enemies
+        > handling ammo for weapons
+        > giving wave timer
+        > storing score and resources
+        > handling if game over or wave completed
+        > giving a 'debug' mode to show and hide hitboxes    
+        > collision detection between enemy and player, enemy and weapons
+        
+    - an input handler
+        > filtering pressed keys for game to handle    
