@@ -8,7 +8,7 @@ window.addEventListener('load', function() {
 
     class InputHandler{
 
-        constructor(game) {
+        constructor(game){
             this.game = game;
 
             window.addEventListener('keydown', input => {
@@ -27,6 +27,10 @@ window.addEventListener('load', function() {
                 } else if(input.key === 'Enter') {
 
                     this.game.newWave();
+
+                } else if(input.key === 'd') {
+
+                    this.game.debug = !this.game.debug;
 
                 }    
             })
@@ -75,8 +79,9 @@ window.addEventListener('load', function() {
             this.speedY = -3;
             this.delete = false
             this.damageAdd = add;
-            this.baseDamage = 10;
+            this.baseDamage = 8;
             this.damage = this.baseDamage + this.damageAdd;
+            this.image = document.getElementById('playerLaser');
         }
 
         update() {
@@ -85,7 +90,12 @@ window.addEventListener('load', function() {
         }
 
         draw(context) {
-            context.strokeRect(this.x, this.y, this.width, this.height);
+
+            if(this.game.debug){
+                context.strokeRect(this.x, this.y, this.width, this.height);
+            }
+            
+            context.drawImage(this.image, this.x, this.y, this.width, this.height);
         }
 
     }
@@ -117,7 +127,7 @@ window.addEventListener('load', function() {
 
     }
 
-    class HelperLaser {
+    class HelperLaser{
 
         constructor(game, x, y, damage) {
             this.game = game;
@@ -142,7 +152,7 @@ window.addEventListener('load', function() {
 
     }
 
-    class Helper {
+    class Helper{
 
         constructor(game, x, amplifier, helperShots) {
             this.game = game;
@@ -219,6 +229,7 @@ window.addEventListener('load', function() {
             this.helper = [];
             this.helperDamageAmplifier = 1;
             this.helperShots = 1;
+            this.image = document.getElementById('player');
         }
 
         update(deltaTime) {
@@ -263,21 +274,26 @@ window.addEventListener('load', function() {
 
         draw(context) {
             if(!this.game.gameOver && !this.game.waveCleared) {
-                context.fillStyle = 'white';
-                context.strokeRect(this.x, this.y, this.width, this.height);
-                context.font = '20px Helvetica';
-                context.fillText(this.health, this.x, this.y);
+
+                if(this.game.debug){
+                    context.fillStyle = 'white';
+                    context.strokeRect(this.x, this.y, this.width, this.height);
+                    context.font = '20px Helvetica';
+                    context.fillText(this.health, this.x, this.y);
+                }
 
                 this.laserShot.forEach(laser => laser.draw(context));
                 this.rocketsShot.forEach(rocket => rocket.draw(context));
                 this.helper.forEach(helper => helper.draw(context));
+
+                context.drawImage(this.image, this.x, this.y, this.width, this.height);
             }
         }
 
         shoot() {
             if(this.game.laserAmmo > 0) {
-                this.laserShot.push(new LaserParticle(this.game, this.x, this.y, this.laserDamageAdd),
-                                    new LaserParticle(this.game, this.x + this.width, this.y, this.laserDamageAdd));
+                this.laserShot.push(new LaserParticle(this.game, this.x + 10, this.y, this.laserDamageAdd),
+                                    new LaserParticle(this.game, this.x + this.width - 10, this.y, this.laserDamageAdd));
                 this.game.laserAmmo --;
             }
         }
@@ -322,14 +338,23 @@ window.addEventListener('load', function() {
 
         update() {
             this.y += this.speedY;
-            if(this.y > this.game.height) this.delete = true;
+            if(this.y > this.game.height){
+                this.delete = true;
+                this.game.score -= this.score / 2;
+                this.game.gold -= Math.ceil(this.gold / 2 );
+            }
         }
 
         draw(context) {
-            context.fillStyle = this.color;
-            context.strokeRect(this.x, this.y, this.width, this.height);
-            context.font = '20px Helvetica';
-            context.fillText(this.health, this.x, this.y);
+
+            if(this.game.debug){
+                context.fillStyle = this.color;
+                context.strokeRect(this.x, this.y, this.width, this.height);
+                context.font = '20px Helvetica';
+                context.fillText(this.health, this.x, this.y);
+            }
+
+            context.drawImage(this.image, this.x, this.y, this.width, this.height);
         }
 
     }
@@ -347,6 +372,7 @@ window.addEventListener('load', function() {
             this.health = this.baseHealth * this.healthScaling;
             this.gold = Math.floor((Math.random() * 1.5) * this.health);
             this.score = this.health;
+            this.image = document.getElementById('enemyOne');
         }
 
     }
@@ -364,6 +390,7 @@ window.addEventListener('load', function() {
             this.health = this.baseHealth * this.healthScaling;
             this.gold = Math.floor((Math.random() * 1.5) * this.health);
             this.score = this.health;
+            this.image = document.getElementById('enemyTwo');
         }
 
     }
@@ -381,6 +408,7 @@ window.addEventListener('load', function() {
             this.health = this.baseHealth * this.healthScaling;
             this.gold = Math.floor((Math.random() * 1.5) * this.health);
             this.score = this.health;
+            this.image = document.getElementById('enemyOne');
         }
 
     }
@@ -504,7 +532,7 @@ window.addEventListener('load', function() {
             this.rocketUpgrades = 0;
             this.healthUpgrades = 0;
             this.helperUpgrades = 0;
-            this.laserCost = 100;
+            this.laserCost = 90;
             this.rocketCost = 200;
             this.healthCost = 300;
             this.helperCost = 400;
@@ -514,34 +542,35 @@ window.addEventListener('load', function() {
             if(element === 'laserUpgrade' && this.game.gold >= this.laserCost) {
                 this.game.gold -= this.laserCost;
                 this.laserUpgrades ++;
-                this.laserCost += Math.floor(this.laserCost * 1.15);
+                this.laserCost += Math.floor(this.laserCost * 0.5);
             } else if(element === 'rocketUpgrade' && this.game.gold >= this.rocketCost) {
                 this.game.gold -= this.rocketCost;
                 this.rocketUpgrades ++;
-                this.rocketCost += Math.floor(this.rocketCost * 1.25);
+                this.rocketCost += Math.floor(this.rocketCost * 0.75);
             } else if(element === 'healthUpgrade' && this.game.gold >= this.healthCost) {
                 this.game.gold -= this.healthCost;
                 this.healthUpgrades ++;
-                this.healthCost += Math.floor(this.healthCost * 1.3);
+                this.healthCost += Math.floor(this.healthCost * 0.8);
             } else if(element === 'helperUpgrade' && this.game.gold >= this.helperCost) {
                 this.game.gold -= this.helperCost;
                 this.helperUpgrades ++;
-                this.helperCost += Math.floor(this.helperCost * 1.5);
+                this.helperCost += Math.floor(this.helperCost * 0.9);
             }
         }
 
         applyUpgrades() {
 
+            console.log(`Laser Upgrades: ${this.laserUpgrades}`);
+            console.log(`Rocket Upgrades: ${this.rocketUpgrades}`);
+            console.log(`Health Upgrades: ${this.healthUpgrades}`);
+            console.log(`Helper Upgrades: ${this.helperUpgrades}`);
+
             //laser upgrades
             if(this.laserUpgrades > 0) {
-                this.game.player.laserDamageAdd += 10;
+                this.game.player.laserDamageAdd += 5;
                 
-                if(this.laserUpgrades >= 15) {
-                    this.game.laserAmmoInterval = 350;
-                } else if(this.laserUpgrades >= 10) {
-                    this.game.laserAmmoInterval = 400;
-                } else if(this.laserUpgrades >= 5) {
-                    this.game.laserAmmoInterval = 450;
+                if(this.laserUpgrades%5 === 0) {
+                    this.game.laserAmmoInterval -= 50;
                 }
             }
             
@@ -651,11 +680,16 @@ window.addEventListener('load', function() {
             context.fillStyle = this.color;
             context.font = this.fontSize + 'px ' + this.fontFamily;
 
+            //debug
+            if(this.game.debug){
+                context.fillText('Enemy Interval: ' + this.game.enemyInterval * 0.001, 500, 100);
+            }
+
             //score
             context.fillText('Score: ' + this.game.score, 20, 40);
 
             //gold
-            context.fillText('BebaCoins: ' + this.game.gold, 550, 40);
+            context.fillText('Gold: ' + this.game.gold, 550, 40);
 
             //time
             let formattedTime = (this.game.waveTime * 0.001).toFixed(1);
@@ -694,11 +728,62 @@ window.addEventListener('load', function() {
 
     }
 
+    class Layer{
+
+        constructor(game, image, scrollSpeedAmp){
+            this.game = game;
+            this.image = image;
+            this.scrollSpeedAmp = scrollSpeedAmp;
+            this.width = 750;
+            this.height = 1000;
+            this.x = 0;
+            this.y = 0;
+        }
+
+        update(){
+            if(this.y >= this.height) this.y = 0;
+            this.y += this.game.speed * this.scrollSpeedAmp;
+        }
+
+        draw(context){
+            context.drawImage(this.image, this.x, this.y, this.width, this.height);
+            context.drawImage(this.image, this.x, this.y - this.height, this.width, this.height);
+        }
+
+    }
+
+    class Background{
+
+        constructor(game){
+            this.game = game;
+            this.image1 = document.getElementById('backgroundNebulaWhite');
+            this.image2 = document.getElementById('backgroundNebulaBlue');
+            this.image3 = document.getElementById('backgroundNebulaPink');
+            this.image4 = document.getElementById('backgroundStarsLayer');
+            this.image5 = document.getElementById('backgroundStarsLayer');
+            this.layer1 = new Layer(this.game, this.image1, 0.6);
+            this.layer2 = new Layer(this.game, this.image2, 1.2);
+            this.layer3 = new Layer(this.game, this.image3, 1.0);
+            this.layer4 = new Layer(this.game, this.image4, 1.6);
+            this.layer = [this.layer1, this.layer2, this.layer3, this.layer4];
+        }
+
+        update(){
+            this.layer.forEach(layer => layer.update());
+        }
+
+        draw(context){
+            this.layer.forEach(layer => layer.draw(context));
+        }
+
+    }
+
     class Game{
 
         constructor(width, height) {
             this.width = width;
             this.height = height;
+            this.background = new Background(this);
             this.input = new InputHandler(this);
             this.mainUI = new MainUI(this);
             this.player = new Player(this);
@@ -708,30 +793,32 @@ window.addEventListener('load', function() {
             this.mouseX = 0;
             this.mouseY = 0;
             this.enemies = [];
-            this.laserAmmo = 15;
+            this.laserAmmo = 10;
             this.maxLaserAmmo = 30;
             this.rockets = 0;
             this.laserAmmoTimer = 0;
-            this.laserAmmoInterval = 500;
+            this.laserAmmoInterval = 750;
             this.rocketTimer = 0;
             this.rocketInterval = 0;
             this.gameOver = false;
             this.waveCleared = false;
             this.enemyTimer = 0;
-            this.enemyInterval = 1000;
+            this.enemyInterval = 1250;
             this.score = 0;
             this.gold = 0;
             this.waveCount = 1;
             this.TimeLimit = 20000;
             this.waveTime = this.TimeLimit;
             this.speed = 1;
-            this.debug = true;
+            this.debug = false;
         }
 
         update(deltaTime) {
             if(!this.gameOver && !this.waveCleared) this.waveTime -= deltaTime;
 
             this.player.update(deltaTime);
+
+            this.background.update();
 
             //ammo refreshing
             this.laserAmmoTimer += deltaTime;
@@ -741,11 +828,11 @@ window.addEventListener('load', function() {
             } else this.laserAmmoTimer += deltaTime;
 
             //enemy spawns
-            if(this.waveTime < 2 && !this.checkForBoss() && this.waveCount%3 === 0 && !this.waveCleared && !this.gameOver) {
+            if(this.waveTime < 2 && !this.checkForBoss() && this.waveCount%5 === 0 && !this.waveCleared && !this.gameOver) {
                 
-                if(this.waveCount === 3) this.enemies.push(new Boss(this));
-                if(this.waveCount === 6) this.enemies.push(new Boss(this, 2));
-                if(this.waveCount === 9) this.enemies.push(new Boss(this, 4));
+                if(this.waveCount === 5) this.enemies.push(new Boss(this));
+                if(this.waveCount === 10) this.enemies.push(new Boss(this, 2));
+                if(this.waveCount === 15) this.enemies.push(new Boss(this, 4));
             
             } else if(this.enemyTimer > this.enemyInterval && (!this.gameOver && this.waveTime > 0)) {
                 
@@ -755,15 +842,15 @@ window.addEventListener('load', function() {
                     if(enemyType < 0.33) this.enemies.push(new MainEnemy1(this));
                     else if(enemyType < 0.66) this.enemies.push(new MainEnemy2(this));
                     else if(enemyType < 0.99) this.enemies.push(new MainEnemy3(this));
-                    else this.enemies.push(new GoldDigger(this));
+                    else this.enemies.push(new Tank(this));
 
                 } else if (4 <= this.waveCount < 7) {
 
                     if(enemyType < 0.3) this.enemies.push(new MainEnemy1(this, 2));
                     else if(enemyType < 0.6) this.enemies.push(new MainEnemy2(this, 2));
                     else if(enemyType < 0.9) this.enemies.push(new MainEnemy3(this, 2));
-                    else if(enemyType < 0.99) this.enemies.push(new Transporter(this, 2));
-                    else this.enemies.push(new GoldDigger(this, 4));
+                    else if(enemyType < 0.99) this.enemies.push(new Tank(this, 2));
+                    else this.enemies.push(new Tank(this, 4));
 
                 } else if (7 <= this.waveCount) {
 
@@ -797,7 +884,11 @@ window.addEventListener('load', function() {
 
                 //enemy and player collision check
                 if(this.checkCollision(this.player, enemy)) {
-                    if(!this.waveCleared) this.player.health -= enemy.damage;   
+                    if(!this.waveCleared) {
+                        this.player.health -= enemy.damage;
+                        this.score -= enemy.score;
+                        this.gold -= enemy.gold;
+                    }   
                     enemy.delete = true;
                     if(this.player.health <= 0) {
                         this.gameOver = true;
@@ -842,6 +933,7 @@ window.addEventListener('load', function() {
         }
 
         draw(context) {
+            this.background.draw(context);
             this.enemies.forEach(enemy => enemy.draw(context));
             this.player.draw(context);
 
@@ -879,8 +971,12 @@ window.addEventListener('load', function() {
                 this.waveCleared = false;
                 this.gameOver = false;
                 this.waveTime = this.TimeLimit;
-                this.laserAmmo = 15;
+                this.laserAmmo = 10;
                 this.player.health = this.player.baseHealth * this.player.healthAdd;
+
+                if(this.waveCount%3 === 0 && this.enemyInterval > 800){
+                    this.enemyInterval -= 150;
+                }
                 
             } else {
                     
@@ -894,6 +990,7 @@ window.addEventListener('load', function() {
                 this.waveTime = this.TimeLimit;
                 this.gameOver = false;
                 this.player.health = this.player.baseHealth
+                this.laserAmmoInterval = 750;
                 
             }
         }
