@@ -427,6 +427,7 @@ window.addEventListener('load', function() {
             this.health = this.baseHealth * this.healthScaling;
             this.gold = Math.floor((Math.random() * 1.5) * this.health);
             this.score = this.health;
+            this.image = document.getElementById('enemyTank');
         }
 
     }
