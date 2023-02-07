@@ -46,8 +46,6 @@ window.addEventListener('load', function() {
                 if(this.game.waveCleared){
                     this.game.mouseX = coordinates.offsetX * (playground.width / playground.offsetWidth);
                     this.game.mouseY = coordinates.offsetY * (playground.height / playground.offsetHeight);
-                    console.log(`x: ${this.game.mouseX} | y: ${this.game.mouseY}`);
-                    console.log(this.game.shopUI.buttons);
 
                     for(let i = 0; i < 4; i++) {
 
@@ -57,7 +55,6 @@ window.addEventListener('load', function() {
                             (this.game.mouseY < this.game.shopUI.buttons[i][1] + this.game.shopUI.buttons[i][3])) {
 
                                 this.game.shop.upgrade(this.game.shopUI.buttons[i][4]);
-                                this.game.shop.applyUpgrades();
 
                             }
 
@@ -113,6 +110,7 @@ window.addEventListener('load', function() {
             this.width = 5;
             this.height = 10;
             this.delete = false;
+            this.image = document.getElementById('playerRocket');
         }
 
         update() {
@@ -121,8 +119,12 @@ window.addEventListener('load', function() {
         }
 
         draw(context) {
-            context.fillStyle = 'green';
-            context.strokeRect(this.x, this.y, this.width, this.height);
+            if(this.game.debug){
+                context.fillStyle = 'green';
+                context.strokeRect(this.x, this.y, this.width, this.height);
+            }
+
+            context.drawImage(this.image, this.x, this.y, this.width, this.height);
         }
 
     }
@@ -138,6 +140,7 @@ window.addEventListener('load', function() {
             this.height = 5;
             this.speedY = -9;
             this.delete = false
+            this.image = document.getElementById('helperLaser');
         }
 
         update() {
@@ -146,8 +149,13 @@ window.addEventListener('load', function() {
         }
 
         draw(context) {
-            context.fillStyle = 'white';
-            context.fillRect(this.x, this.y, this.width, this.height);
+            if(this.game.debug){
+                context.fillStyle = 'white';
+                context.fillRect(this.x, this.y, this.width, this.height);
+            }
+
+            context.drawImage(this.image, this.x, this.y, this.width, this.height)
+
         }
 
     }
@@ -161,13 +169,14 @@ window.addEventListener('load', function() {
             this.height = 25;
             this.width = 60;
             this.speedX = (Math.random() * 1.5 + 0.5);
-            this.baseDamage = 15;
+            this.baseDamage = 20;
             this.damageAmplifier = amplifier;
             this.damage = Math.floor(this.baseDamage * this.damageAmplifier);
             this.shots = [];
             this.shotTimer = 0;
             this.shotInterval = 1000;
             this.shotsFiring = helperShots;
+            this.image = document.getElementById('playerHelper');
         }
 
         update(deltaTime) {
@@ -195,12 +204,15 @@ window.addEventListener('load', function() {
 
         draw(context) {
             if(!this.game.gameOver && !this.game.waveCleared) {
-                context.fillStyle = 'white';
-                context.fillRect(this.x, this.y, this.width, this.height);
-                context.font = '20px Helvetica';
-                context.fillText('Damage: ' + this.damage, this.x, this.y);
+                if(this.game.debug){
+                    context.fillStyle = 'white';
+                    context.fillRect(this.x, this.y, this.width, this.height);
+                    context.font = '20px Helvetica';
+                    context.fillText('Damage: ' + this.damage, this.x, this.y);
+                }
 
                 this.shots.forEach(shot => shot.draw(context));
+                context.drawImage(this.image, this.x, this.y, this.width, this.height);
             }
         }
 
@@ -223,11 +235,11 @@ window.addEventListener('load', function() {
             this.laserDamageAdd = 0;
             this.rocketDamageAdd = 0;
             this.baseHealth = 100;
-            this.healthAdd = 1;
-            this.health = Math.floor(this.baseHealth * this.healthAdd);
+            this.healthAdd = 0;
+            this.health = Math.floor(this.baseHealth + this.healthAdd);
             this.helperAmount = 0;
             this.helper = [];
-            this.helperDamageAmplifier = 1;
+            this.helperDamageAmplifier = 0;
             this.helperShots = 1;
             this.image = document.getElementById('player');
         }
@@ -312,6 +324,7 @@ window.addEventListener('load', function() {
             this.delete = false;
             this.damage = 20;
             this.delete = false;
+            this.image = document.getElementById('enemyLaser');
         }
 
         update() {
@@ -320,8 +333,12 @@ window.addEventListener('load', function() {
         }
 
         draw(context) {
-            context.fillStyle = 'red';
-            context.fillRect(this.x, this.y, this.width, this.height);
+            if(this.game.debug){
+                context.fillStyle = 'red';
+                context.fillRect(this.x, this.y, this.width, this.height);
+            }
+
+            context.drawImage(this.image, this.x, this.y, this.width, this.height);
         }
 
     }
@@ -365,7 +382,7 @@ window.addEventListener('load', function() {
             super(game, healthScaling, y);
             this.x = x;
             this.baseHealth = 25;
-            this.damage = 10;
+            this.damage = 5;
             this.width = 50;
             this.height = 50;
             this.color = 'red';
@@ -383,7 +400,7 @@ window.addEventListener('load', function() {
             super(game, healthScaling, y);
             this.x = x;
             this.baseHealth = 35;
-            this.damage = 10;
+            this.damage = 5;
             this.width = 60;
             this.height = 40;
             this.color = 'green';
@@ -401,14 +418,14 @@ window.addEventListener('load', function() {
             super(game, healthScaling, y);
             this.x = x;
             this.baseHealth = 20;
-            this.damage = 10;
+            this.damage = 5;
             this.width = 40;
             this.height = 60;
             this.color = 'orange';
             this.health = this.baseHealth * this.healthScaling;
             this.gold = Math.floor((Math.random() * 1.5) * this.health);
             this.score = this.health;
-            this.image = document.getElementById('enemyOne');
+            this.image = document.getElementById('enemyThree');
         }
 
     }
@@ -418,7 +435,7 @@ window.addEventListener('load', function() {
         constructor(game, healthScaling = 1) {
             super(game, healthScaling);
             this.x = Math.random() * (this.game.width * 0.75);
-            this.baseHealth = 150;
+            this.baseHealth = 300;
             this.damage = 20;
             this.width = 250;
             this.height = 100;
@@ -438,14 +455,15 @@ window.addEventListener('load', function() {
             super(game, healthScaling, y);
             this.x = x;
             this.baseHealth = 20;
-            this.damage = 5;
+            this.damage = 3;
             this.width = 30;
             this.height = 45;
             this.speedY = (Math.random() * 1.2 + 0.3) / 0.25;
             this.color = 'yellow';
             this.health = this.baseHealth * this.healthScaling;
-            this.gold = 10 * Math.floor((Math.random() * 5) * this.health);
+            this.gold = 5 * Math.floor((Math.random() * 5) * this.health);
             this.score = this.health;
+            this.image = document.getElementById('enemyGoldDigger');
         }
 
     }
@@ -455,8 +473,8 @@ window.addEventListener('load', function() {
         constructor(game, healthScaling = 1) {
             super(game, healthScaling);
             this.x = Math.random() * (this.game.width * 0.75);
-            this.baseHealth = 100;
-            this.damage = 30;
+            this.baseHealth = 200;
+            this.damage = 10;
             this.width = 150;
             this.height = 75;
             this.speedY = (Math.random() * 1.2 + 0.3) * 0.75;
@@ -464,6 +482,7 @@ window.addEventListener('load', function() {
             this.health = this.baseHealth * this.healthScaling;
             this.gold = Math.floor((Math.random() * 1.5) * this.health);
             this.score = this.health;
+            this.image = document.getElementById('enemyTransport');
         }
 
     }
@@ -474,7 +493,7 @@ window.addEventListener('load', function() {
             super(game, healthScaling, y);
             this.x = Math.random() * (this.game.width * 0.5);
             this.baseHealth = 1000;
-            this.damage = 30;
+            this.damage = 20;
             this.width = 400;
             this.height = 75;
             this.speedY = 0;
@@ -486,6 +505,11 @@ window.addEventListener('load', function() {
             this.health = this.baseHealth + this.healthScaling;
             this.gold = Math.floor((Math.random() * 1.5) * this.health);
             this.score = this.health;
+            this.image1 = document.getElementById('bossAppOne');
+            this.image2 = document.getElementById('bossAppTwo');
+            this.image3 = document.getElementById('bossAppThree');
+            this.imageArray = [this.image1, this.image2, this.image3];
+            this.image = this.imageArray[Math.floor(Math.random() * 2)];
         }
 
         update(deltaTime) {
@@ -516,11 +540,14 @@ window.addEventListener('load', function() {
 
         draw(context) {
             this.shots.forEach(shot => shot.draw(context));
+            context.drawImage(this.image, this.x, this.y, this.width, this.height);
 
-            context.fillStyle = this.color;
-            context.strokeRect(this.x, this.y, this.width, this.height);
-            context.font = '20px Helvetica';
-            context.fillText(this.health, this.x, this.y);
+            if(this.game.debug){
+                context.fillStyle = this.color;
+                context.strokeRect(this.x, this.y, this.width, this.height);
+                context.font = '20px Helvetica';
+                context.fillText(this.health, this.x, this.y);
+            }
         }
 
     }
@@ -534,9 +561,9 @@ window.addEventListener('load', function() {
             this.healthUpgrades = 0;
             this.helperUpgrades = 0;
             this.laserCost = 90;
-            this.rocketCost = 200;
-            this.healthCost = 300;
-            this.helperCost = 400;
+            this.rocketCost = 150;
+            this.healthCost = 200;
+            this.helperCost = 250;
         }
 
         upgrade(element) {
@@ -544,28 +571,26 @@ window.addEventListener('load', function() {
                 this.game.gold -= this.laserCost;
                 this.laserUpgrades ++;
                 this.laserCost += Math.floor(this.laserCost * 0.5);
+                this.applyUpgrades();
             } else if(element === 'rocketUpgrade' && this.game.gold >= this.rocketCost) {
                 this.game.gold -= this.rocketCost;
                 this.rocketUpgrades ++;
                 this.rocketCost += Math.floor(this.rocketCost * 0.75);
+                this.applyUpgrades();
             } else if(element === 'healthUpgrade' && this.game.gold >= this.healthCost) {
                 this.game.gold -= this.healthCost;
                 this.healthUpgrades ++;
                 this.healthCost += Math.floor(this.healthCost * 0.8);
+                this.applyUpgrades();
             } else if(element === 'helperUpgrade' && this.game.gold >= this.helperCost) {
                 this.game.gold -= this.helperCost;
                 this.helperUpgrades ++;
                 this.helperCost += Math.floor(this.helperCost * 0.9);
+                this.applyUpgrades();
             }
         }
 
         applyUpgrades() {
-
-            console.log(`Laser Upgrades: ${this.laserUpgrades}`);
-            console.log(`Rocket Upgrades: ${this.rocketUpgrades}`);
-            console.log(`Health Upgrades: ${this.healthUpgrades}`);
-            console.log(`Helper Upgrades: ${this.helperUpgrades}`);
-
             //laser upgrades
             if(this.laserUpgrades > 0) {
                 this.game.player.laserDamageAdd += 5;
@@ -578,12 +603,12 @@ window.addEventListener('load', function() {
 
             //rocket upgrades
             if(this.rocketUpgrades >= 1) {
-                this.game.player.rocketDamageAdd += 20;
+                this.game.player.rocketDamageAdd += 10;
             }
 
             //health upgrades
             if(this.healthUpgrades >= 1) {
-                this.game.player.healthAdd += 0.25;
+                this.game.player.healthAdd += 25;
             }
 
             //helper upgrades
@@ -614,7 +639,7 @@ window.addEventListener('load', function() {
             context.font = this.fontSize + 'px ' + this.fontFamily;
 
             //gold
-            context.fillText('BebaCoins: ' + this.game.gold, 550, 40);
+            context.fillText('Gold: ' + this.game.gold, 550, 40);
 
             //upgrade buttons
             for(let i = 0; i < 4; i++) {
@@ -638,7 +663,7 @@ window.addEventListener('load', function() {
                     context.fillStyle = 'black';
                     context.fillText('Upgrade your Health', 43 + 175 * i, 525);
                     context.fillText('Costs: ' + this.game.shop.healthCost, 75 + 175 * i, 625);
-                } else {
+                } else if(i === 3){
                     text = 'helperUpgrade';
                     context.fillStyle = 'black';
                     context.fillText('Upgrade your Helpers', 40 + 175 * i, 525);
@@ -650,12 +675,19 @@ window.addEventListener('load', function() {
             //info sheets for upgradeables
             for(let i = 0; i < 4; i++) {
                 let xCoord = 40 + 175 * i;
-                context.fillStyle = 'black';
+                context.fillStyle = 'rgb(30, 30, 30)';
                 context.font = '15px ' + this.fontFamily;
                 context.fillRect(36 + 175 * i, 665, 150, 310);
                 context.fillStyle = 'white';
                 if(i === 0) {
-                    context.fillText('Damage: ' + (10 + this.game.player.laserDamageAdd), xCoord, 690);
+                    context.fillText('Current Damage: ' + (8 + this.game.player.laserDamageAdd), xCoord, 690);
+                }else if(i === 1){
+                    context.fillText('Current Damage: ' + (this.game.player.rocketDamageAdd), xCoord, 690);
+                }else if(i === 2){
+                    context.fillText('Current Health: ' + (this.game.player.baseHealth + this.game.player.healthAdd), xCoord, 690)
+                }else if(i === 3){
+                    context.fillText('Current Helpers: ' + (this.game.player.helper.length), xCoord, 690);
+                    context.fillText('Current Damage: ' + (20 * this.game.player.helperDamageAmplifier), xCoord, 740);
                 }
             }
         }
@@ -843,7 +875,7 @@ window.addEventListener('load', function() {
                     if(enemyType < 0.33) this.enemies.push(new MainEnemy1(this));
                     else if(enemyType < 0.66) this.enemies.push(new MainEnemy2(this));
                     else if(enemyType < 0.99) this.enemies.push(new MainEnemy3(this));
-                    else this.enemies.push(new Tank(this));
+                    else this.enemies.push(new GoldDigger(this));
 
                 } else if (4 <= this.waveCount < 7) {
 
@@ -851,7 +883,7 @@ window.addEventListener('load', function() {
                     else if(enemyType < 0.6) this.enemies.push(new MainEnemy2(this, 2));
                     else if(enemyType < 0.9) this.enemies.push(new MainEnemy3(this, 2));
                     else if(enemyType < 0.99) this.enemies.push(new Tank(this, 2));
-                    else this.enemies.push(new Tank(this, 4));
+                    else this.enemies.push(new GoldDigger(this, 4));
 
                 } else if (7 <= this.waveCount) {
 
@@ -886,9 +918,12 @@ window.addEventListener('load', function() {
                 //enemy and player collision check
                 if(this.checkCollision(this.player, enemy)) {
                     if(!this.waveCleared) {
+                        if(!(enemy instanceof GoldDigger)){
+                            this.score -= enemy.score;
+                            this.gold -= enemy.gold;
+                            this.player.health -= enemy.damage;
+                        }
                         this.player.health -= enemy.damage;
-                        this.score -= enemy.score;
-                        this.gold -= enemy.gold;
                     }   
                     enemy.delete = true;
                     if(this.player.health <= 0) {
@@ -973,7 +1008,7 @@ window.addEventListener('load', function() {
                 this.gameOver = false;
                 this.waveTime = this.TimeLimit;
                 this.laserAmmo = 10;
-                this.player.health = this.player.baseHealth * this.player.healthAdd;
+                this.player.health = this.player.baseHealth + this.player.healthAdd;
 
                 if(this.waveCount%3 === 0 && this.enemyInterval > 800){
                     this.enemyInterval -= 150;
