@@ -49,10 +49,10 @@ window.addEventListener('load', function() {
 
                     for(let i = 0; i < 4; i++) {
 
-                        if( (this.game.mouseX > this.game.shopUI.buttons[i][0]) &&
-                            (this.game.mouseX < this.game.shopUI.buttons[i][0] + this.game.shopUI.buttons[i][2]) &&
-                            (this.game.mouseY > this.game.shopUI.buttons[i][1]) &&
-                            (this.game.mouseY < this.game.shopUI.buttons[i][1] + this.game.shopUI.buttons[i][3])) {
+                        if( (coordinates.offsetX * (playground.width / playground.offsetWidth) > this.game.shopUI.buttons[i][0]) &&
+                            (coordinates.offsetX * (playground.width / playground.offsetWidth) < this.game.shopUI.buttons[i][0] + this.game.shopUI.buttons[i][2]) &&
+                            (coordinates.offsetY * (playground.height / playground.offsetHeight) > this.game.shopUI.buttons[i][1]) &&
+                            (coordinates.offsetY * (playground.height / playground.offsetHeight) < this.game.shopUI.buttons[i][1] + this.game.shopUI.buttons[i][3])) {
 
                                 this.game.shop.upgrade(this.game.shopUI.buttons[i][4]);
 
@@ -169,7 +169,7 @@ window.addEventListener('load', function() {
             this.height = 25;
             this.width = 60;
             this.speedX = (Math.random() * 1.5 + 0.5);
-            this.baseDamage = 20;
+            this.baseDamage = 30;
             this.damageAmplifier = amplifier;
             this.damage = Math.floor(this.baseDamage * this.damageAmplifier);
             this.shots = [];
@@ -275,7 +275,10 @@ window.addEventListener('load', function() {
 
             //helper handling
             if(this.helper.length < this.helperAmount) {
-                this.helper.push(new Helper(this.game, this.x + this.width * 0.5, this.helperDamageAmplifier, this.helperShots));
+                for(let i = 0; i < this.helperAmount; i++){
+                    this.helper.push(new Helper(this.game, this.x + this.width * 0.5, this.helperDamageAmplifier, this.helperShots));
+                }
+
             }
 
 
@@ -345,12 +348,13 @@ window.addEventListener('load', function() {
 
     class Enemy{
 
-        constructor(game, healthScaling = 1, y = 0) {
+        constructor(game, healthScaling, damageAmplifier, y = 0) {
             this.game = game;
             this.y = y;
             this.delete = false;
             this.speedY = (Math.random() * 1.2 + 0.3);
             this.healthScaling = healthScaling;
+            this.damageAmplifier = damageAmplifier;
         }
 
         update() {
@@ -358,7 +362,9 @@ window.addEventListener('load', function() {
             if(this.y > this.game.height){
                 this.delete = true;
                 this.game.score -= this.score / 2;
-                this.game.gold -= Math.ceil(this.gold / 2 );
+                if(this.damage !== 3){
+                    this.game.gold -= Math.ceil(this.gold / 2 );
+                }
             }
         }
 
@@ -378,15 +384,16 @@ window.addEventListener('load', function() {
 
     class MainEnemy1 extends Enemy{
 
-        constructor(game, healthScaling = 1, x = Math.random() * (playground.width * 0.95), y = 0) {
-            super(game, healthScaling, y);
+        constructor(game, healthScaling, damageAmplifier, x = Math.random() * (playground.width * 0.95), y = 0) {
+            super(game, healthScaling, damageAmplifier, y);
             this.x = x;
             this.baseHealth = 25;
-            this.damage = 5;
+            this.baseDamage = 10;
+            this.damage = Math.floor(this.baseDamage * this.damageAmplifier);
             this.width = 50;
             this.height = 50;
             this.color = 'red';
-            this.health = this.baseHealth * this.healthScaling;
+            this.health = Math.floor(this.baseHealth * this.healthScaling);
             this.gold = Math.floor((Math.random() * 1.5) * this.health);
             this.score = this.health;
             this.image = document.getElementById('enemyOne');
@@ -396,15 +403,16 @@ window.addEventListener('load', function() {
 
     class MainEnemy2 extends Enemy{
 
-        constructor(game, healthScaling = 1, x = Math.random() * (playground.width * 0.95), y = 0) {
-            super(game, healthScaling, y);
+        constructor(game, healthScaling, damageAmplifier, x = Math.random() * (playground.width * 0.95), y = 0) {
+            super(game, healthScaling, damageAmplifier, y);
             this.x = x;
             this.baseHealth = 35;
-            this.damage = 5;
+            this.baseDamage = 10;
+            this.damage = Math.floor(this.baseDamage * this.damageAmplifier);
             this.width = 60;
             this.height = 40;
             this.color = 'green';
-            this.health = this.baseHealth * this.healthScaling;
+            this.health = Math.floor(this.baseHealth * this.healthScaling);
             this.gold = Math.floor((Math.random() * 1.5) * this.health);
             this.score = this.health;
             this.image = document.getElementById('enemyTwo');
@@ -414,15 +422,16 @@ window.addEventListener('load', function() {
 
     class MainEnemy3 extends Enemy{
 
-        constructor(game, healthScaling = 1, x = Math.random() * (playground.width * 0.95), y = 0) {
-            super(game, healthScaling, y);
+        constructor(game, healthScaling, damageAmplifier, x = Math.random() * (playground.width * 0.95), y = 0) {
+            super(game, healthScaling, damageAmplifier, y);
             this.x = x;
             this.baseHealth = 20;
-            this.damage = 5;
+            this.baseDamage = 10;
+            this.damage = Math.floor(this.baseDamage * this.damageAmplifier);
             this.width = 40;
             this.height = 60;
             this.color = 'orange';
-            this.health = this.baseHealth * this.healthScaling;
+            this.health = Math.floor(this.baseHealth * this.healthScaling);
             this.gold = Math.floor((Math.random() * 1.5) * this.health);
             this.score = this.health;
             this.image = document.getElementById('enemyThree');
@@ -432,17 +441,18 @@ window.addEventListener('load', function() {
 
     class Tank extends Enemy{
 
-        constructor(game, healthScaling = 1) {
-            super(game, healthScaling);
+        constructor(game, healthScaling, damageAmplifier) {
+            super(game, healthScaling, damageAmplifier);
             this.x = Math.random() * (this.game.width * 0.75);
             this.baseHealth = 300;
-            this.damage = 20;
+            this.baseDamage = 50;
+            this.damage = Math.floor(this.baseDamage * this.damageAmplifier);
             this.width = 250;
             this.height = 100;
             this.speedY = (Math.random() * 1.2 + 0.3) * 0.5;
             this.color = 'black';
-            this.health = this.baseHealth * this.healthScaling;
-            this.gold = Math.floor((Math.random() * 1.5) * this.health);
+            this.health = Math.floor(this.baseHealth * this.healthScaling);
+            this.gold = Math.floor((Math.random() * 1.5) * this.health / 3);
             this.score = this.health;
             this.image = document.getElementById('enemyTank');
         }
@@ -451,8 +461,8 @@ window.addEventListener('load', function() {
 
     class GoldDigger extends Enemy{
 
-        constructor(game, healthScaling = 1, x = Math.random() * (playground.width * 0.95), y = 0) {
-            super(game, healthScaling, y);
+        constructor(game, healthScaling, damageAmplifier, x = Math.random() * (playground.width * 0.95), y = 0) {
+            super(game, healthScaling, damageAmplifier, y);
             this.x = x;
             this.baseHealth = 20;
             this.damage = 3;
@@ -460,7 +470,7 @@ window.addEventListener('load', function() {
             this.height = 45;
             this.speedY = (Math.random() * 1.2 + 0.3) / 0.25;
             this.color = 'yellow';
-            this.health = this.baseHealth * this.healthScaling;
+            this.health = Math.floor(this.baseHealth * this.healthScaling);
             this.gold = 5 * Math.floor((Math.random() * 5) * this.health);
             this.score = this.health;
             this.image = document.getElementById('enemyGoldDigger');
@@ -470,16 +480,17 @@ window.addEventListener('load', function() {
 
     class Transporter extends Enemy{
 
-        constructor(game, healthScaling = 1) {
-            super(game, healthScaling);
+        constructor(game, healthScaling, damageAmplifier) {
+            super(game, healthScaling, damageAmplifier);
             this.x = Math.random() * (this.game.width * 0.75);
             this.baseHealth = 200;
-            this.damage = 10;
+            this.baseDamage = 25;
+            this.damage = Math.floor(this.baseDamage * this.damageAmplifier);
             this.width = 150;
             this.height = 75;
             this.speedY = (Math.random() * 1.2 + 0.3) * 0.75;
             this.color = 'white';
-            this.health = this.baseHealth * this.healthScaling;
+            this.health = Math.floor(this.baseHealth * this.healthScaling);
             this.gold = Math.floor((Math.random() * 1.5) * this.health);
             this.score = this.health;
             this.image = document.getElementById('enemyTransport');
@@ -489,11 +500,12 @@ window.addEventListener('load', function() {
 
     class Boss extends Enemy{
 
-        constructor(game, healthScaling = 1, y = 50) {
-            super(game, healthScaling, y);
+        constructor(game, healthScaling, damageAmplifier, y = 50) {
+            super(game, healthScaling, damageAmplifier, y);
             this.x = Math.random() * (this.game.width * 0.5);
-            this.baseHealth = 1000;
-            this.damage = 20;
+            this.baseHealth = 2000;
+            this.baseDamage = 20;
+            this.damage = Math.floor(this.baseDamage * this.damageAmplifier);
             this.width = 400;
             this.height = 75;
             this.speedY = 0;
@@ -502,8 +514,8 @@ window.addEventListener('load', function() {
             this.shots = [];
             this.shotInterval = 1000;
             this.shotTimer = 0;
-            this.health = this.baseHealth + this.healthScaling;
-            this.gold = Math.floor((Math.random() * 1.5) * this.health);
+            this.health = Math.floor(this.baseHealth * this.healthScaling);
+            this.gold = Math.floor((Math.random() * 1.5) * this.health / 2);
             this.score = this.health;
             this.image1 = document.getElementById('bossAppOne');
             this.image2 = document.getElementById('bossAppTwo');
@@ -557,46 +569,64 @@ window.addEventListener('load', function() {
         constructor(game) {
             this.game = game;
             this.laserUpgrades = 0;
-            this.rocketUpgrades = 0;
-            this.healthUpgrades = 0;
             this.helperUpgrades = 0;
-            this.laserCost = 90;
-            this.rocketCost = 150;
-            this.healthCost = 200;
-            this.helperCost = 250;
+            this.laserCost = 95;
+            this.rocketCost = 200;
+            this.healthCost = 250;
+            this.helperCost = 400;
         }
 
         upgrade(element) {
             if(element === 'laserUpgrade' && this.game.gold >= this.laserCost) {
                 this.game.gold -= this.laserCost;
                 this.laserUpgrades ++;
-                this.laserCost += Math.floor(this.laserCost * 0.5);
-                this.applyUpgrades();
+                this.laserCost += Math.floor(this.laserCost * 0.25);
+                this.applyUpgrades('laser');
             } else if(element === 'rocketUpgrade' && this.game.gold >= this.rocketCost) {
                 this.game.gold -= this.rocketCost;
-                this.rocketUpgrades ++;
-                this.rocketCost += Math.floor(this.rocketCost * 0.75);
-                this.applyUpgrades();
+                this.rocketCost += Math.floor(this.rocketCost * 0.5);
+                this.applyUpgrades('rocket');
             } else if(element === 'healthUpgrade' && this.game.gold >= this.healthCost) {
                 this.game.gold -= this.healthCost;
-                this.healthUpgrades ++;
-                this.healthCost += Math.floor(this.healthCost * 0.8);
-                this.applyUpgrades();
+                this.healthCost += Math.floor(this.healthCost * 0.75);
+                this.applyUpgrades('health');
             } else if(element === 'helperUpgrade' && this.game.gold >= this.helperCost) {
                 this.game.gold -= this.helperCost;
                 this.helperUpgrades ++;
-                this.helperCost += Math.floor(this.helperCost * 0.9);
-                this.applyUpgrades();
+                this.helperCost += Math.floor(this.helperCost * 0.8);
+                this.applyUpgrades('helper');
             }
         }
 
-        applyUpgrades() {
-            //laser upgrades
-            if(this.laserUpgrades > 0) {
-                this.game.player.laserDamageAdd += 5;
+        applyUpgrades(e) {
+
+            if(e === 'laser'){
+                this.game.player.laserDamageAdd += 4;
                 
-                if(this.laserUpgrades%5 === 0) {
+                if(this.laserUpgrades%5 === 0){
                     this.game.laserAmmoInterval -= 50;
+                }
+
+            } else if(e === 'rocket'){
+                this.game.player.rocketDamageAdd += 10;
+
+            } else if(e === 'health'){
+                this.game.player.healthAdd += 25;
+
+            } else if(e === 'helper'){
+                if(this.helperUpgrades < 4){
+                    this.game.player.helperAmount = 1;
+                    this.game.player.helperDamageAmplifier += 0.5;
+                    this.game.player.helper = [];
+
+                } else if(this.helperUpgrades < 8){
+                    this.game.player.helper = [];
+                    this.game.player.helperShots = 2;
+                    this.game.player.helperDamageAmplifier += 0.5
+                } else{
+                    this.game.player.helper = [];
+                    this.game.player.helperAmount = 2
+                    this.game.player.helperDamageAmplifier += 0.5
                 }
             }
             
@@ -615,7 +645,7 @@ window.addEventListener('load', function() {
             if(this.helperUpgrades > 0 && this.helperUpgrades < 4) {
                 this.game.player.helperAmount = 1;
                 this.game.player.helperDamageAmplifier += 0.5 + this.helperUpgrades * 0.5;
-            } else if(this.helperUpgrades > 3 && this.helperUpgrades < 5) {
+            } else if(this.helperUpgrades > 3) {
                 this.game.player.helperAmount = 1;
                 this.game.player.helperShots = 2;
                 this.game.player.helperDamageAmplifier += 0.5;
@@ -675,7 +705,7 @@ window.addEventListener('load', function() {
             //info sheets for upgradeables
             for(let i = 0; i < 4; i++) {
                 let xCoord = 40 + 175 * i;
-                context.fillStyle = 'rgb(30, 30, 30)';
+                context.fillStyle = 'rgb(50, 50, 50)';
                 context.font = '15px ' + this.fontFamily;
                 context.fillRect(36 + 175 * i, 665, 150, 310);
                 context.fillStyle = 'white';
@@ -798,7 +828,7 @@ window.addEventListener('load', function() {
             this.layer2 = new Layer(this.game, this.image2, 1.2);
             this.layer3 = new Layer(this.game, this.image3, 1.0);
             this.layer4 = new Layer(this.game, this.image4, 1.6);
-            this.layer = [this.layer1, this.layer2, this.layer3, this.layer4];
+            this.layer = [this.layer1, this.layer2, this.layer3];
         }
 
         update(){
@@ -823,8 +853,6 @@ window.addEventListener('load', function() {
             this.shop = new Shop(this);
             this.shopUI = new ShopUI(this);
             this.keys = [];
-            this.mouseX = 0;
-            this.mouseY = 0;
             this.enemies = [];
             this.laserAmmo = 10;
             this.maxLaserAmmo = 30;
@@ -840,6 +868,8 @@ window.addEventListener('load', function() {
             this.score = 0;
             this.gold = 0;
             this.waveCount = 1;
+            this.enemyHealthAmp = 1;
+            this.enemyDamageAmp = 1;
             this.TimeLimit = 20000;
             this.waveTime = this.TimeLimit;
             this.speed = 1;
@@ -863,36 +893,34 @@ window.addEventListener('load', function() {
             //enemy spawns
             if(this.waveTime < 2 && !this.checkForBoss() && this.waveCount%5 === 0 && !this.waveCleared && !this.gameOver) {
                 
-                if(this.waveCount === 5) this.enemies.push(new Boss(this));
-                if(this.waveCount === 10) this.enemies.push(new Boss(this, 2));
-                if(this.waveCount === 15) this.enemies.push(new Boss(this, 4));
+                this.enemies.push(new Boss(this, this.enemyHealthAmp, this.enemyDamageAmp));
             
             } else if(this.enemyTimer > this.enemyInterval && (!this.gameOver && this.waveTime > 0)) {
                 
                 let enemyType = Math.random();
-                if(this.waveCount < 4) {   
+                if(this.waveCount < 5) {   
                     
-                    if(enemyType < 0.33) this.enemies.push(new MainEnemy1(this));
-                    else if(enemyType < 0.66) this.enemies.push(new MainEnemy2(this));
-                    else if(enemyType < 0.99) this.enemies.push(new MainEnemy3(this));
-                    else this.enemies.push(new GoldDigger(this));
+                    if(enemyType < 0.33) this.enemies.push(new MainEnemy1(this, this.enemyHealthAmp, this.enemyDamageAmp));
+                    else if(enemyType < 0.66) this.enemies.push(new MainEnemy2(this, this.enemyHealthAmp, this.enemyDamageAmp));
+                    else if(enemyType < 0.99) this.enemies.push(new MainEnemy3(this, this.enemyHealthAmp, this.enemyDamageAmp));
+                    else this.enemies.push(new GoldDigger(this, this.enemyHealthAmp, this.enemyDamageAmp));
 
-                } else if (4 <= this.waveCount < 7) {
+                } else if (4 <= this.waveCount < 9) {
 
-                    if(enemyType < 0.3) this.enemies.push(new MainEnemy1(this, 2));
-                    else if(enemyType < 0.6) this.enemies.push(new MainEnemy2(this, 2));
-                    else if(enemyType < 0.9) this.enemies.push(new MainEnemy3(this, 2));
-                    else if(enemyType < 0.99) this.enemies.push(new Tank(this, 2));
-                    else this.enemies.push(new GoldDigger(this, 4));
+                    if(enemyType < 0.3) this.enemies.push(new MainEnemy1(this, this.enemyHealthAmp, this.enemyDamageAmp));
+                    else if(enemyType < 0.6) this.enemies.push(new MainEnemy2(this, this.enemyHealthAmp, this.enemyDamageAmp));
+                    else if(enemyType < 0.9) this.enemies.push(new MainEnemy3(this, this.enemyHealthAmp, this.enemyDamageAmp));
+                    else if(enemyType < 0.99) this.enemies.push(new Tank(this, this.enemyHealthAmp, this.enemyDamageAmp));
+                    else this.enemies.push(new GoldDigger(this, this.enemyHealthAmp, this.enemyDamageAmp));
 
-                } else if (7 <= this.waveCount) {
+                } else if (this.waveCount > 8) {
 
-                    if(enemyType < 0.25) this.enemies.push(new MainEnemy1(this, 4));
-                    else if(enemyType < 0.5) this.enemies.push(new MainEnemy2(this, 4));
-                    else if(enemyType < 0.75) this.enemies.push(new MainEnemy3(this, 4));
-                    else if(enemyType < 0.87) this.enemies.push(new Transporter(this, 4));
-                    else if(enemyType < 0.99) this.enemies.push(new Tank(this, 4));
-                    else this.enemies.push(new GoldDigger(this, 8));
+                    if(enemyType < 0.25) this.enemies.push(new MainEnemy1(this, this.enemyHealthAmp, this.enemyDamageAmp));
+                    else if(enemyType < 0.5) this.enemies.push(new MainEnemy2(this, this.enemyHealthAmp, this.enemyDamageAmp));
+                    else if(enemyType < 0.75) this.enemies.push(new MainEnemy3(this, this.enemyHealthAmp, this.enemyDamageAmp));
+                    else if(enemyType < 0.87) this.enemies.push(new Transporter(this, this.enemyHealthAmp, this.enemyDamageAmp));
+                    else if(enemyType < 0.99) this.enemies.push(new Tank(this, this.enemyHealthAmp, this.enemyDamageAmp));
+                    else this.enemies.push(new GoldDigger(this, this.enemyHealthAmp, this.enemyDamageAmp));
 
                 }
                 this.enemyTimer = 0;
@@ -1003,15 +1031,23 @@ window.addEventListener('load', function() {
             if(this.waveCleared) {
                     
                 this.waveCount ++;
-                this.TimeLimit += 10000;
+                this.TimeLimit += 2500;
                 this.waveCleared = false;
                 this.gameOver = false;
                 this.waveTime = this.TimeLimit;
                 this.laserAmmo = 10;
                 this.player.health = this.player.baseHealth + this.player.healthAdd;
 
-                if(this.waveCount%3 === 0 && this.enemyInterval > 800){
-                    this.enemyInterval -= 150;
+                if(this.waveCount%3 === 0){
+                    this.enemyHealthAmp += 0.5;
+                    
+                    if(this.enemyInterval > 800){
+                        this.enemyInterval -= 150;
+                    }
+                }
+
+                if(this.waveCount%5 === 0){
+                    this.enemyDamageAmp += 1;
                 }
                 
             } else {
@@ -1047,30 +1083,30 @@ window.addEventListener('load', function() {
                             for(let i = 0; i < 3; i++) {
                                 let encounter = Math.random();
                     
-                                if(encounter < 0.3) this.enemies.push(new MainEnemy1(this, enemy.healthScaling ,enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
-                                else if(encounter < 0.6) this.enemies.push(new MainEnemy2(this, enemy.healthScaling, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
-                                else if( encounter < 0.9) this.enemies.push(new MainEnemy3(this, enemy.healthScaling, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
-                                else this.enemies.push(new GoldDigger(this, enemy.healthScaling, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
+                                if(encounter < 0.3) this.enemies.push(new MainEnemy1(this, this.enemyHealthAmp, this.enemyDamageAmp, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
+                                else if(encounter < 0.6) this.enemies.push(new MainEnemy2(this, this.enemyHealthAmp, this.enemyDamageAmp, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
+                                else if( encounter < 0.9) this.enemies.push(new MainEnemy3(this, this.enemyHealthAmp, this.enemyDamageAmp, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
+                                else this.enemies.push(new GoldDigger(this, this.enemyHealthAmp, this.enemyDamageAmp, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
                 
                             }
                         } else if(enemiesTransported === 4) {
                             for(let i = 0; i < 4; i++) {
                                 let encounter = Math.random();
                     
-                                if(encounter < 0.3) this.enemies.push(new MainEnemy1(this, enemy.healthScaling, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
-                                else if(encounter < 0.6) this.enemies.push(new MainEnemy2(this, enemy.healthScaling, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
-                                else if( encounter < 0.9) this.enemies.push(new MainEnemy3(this, enemy.healthScaling, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
-                                else this.enemies.push(new GoldDigger(this, enemy.healthScaling, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
+                                if(encounter < 0.3) this.enemies.push(new MainEnemy1(this, this.enemyHealthAmp, this.enemyDamageAmp, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
+                                else if(encounter < 0.6) this.enemies.push(new MainEnemy2(this, this.enemyHealthAmp, this.enemyDamageAmp, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
+                                else if( encounter < 0.9) this.enemies.push(new MainEnemy3(this, this.enemyHealthAmp, this.enemyDamageAmp, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
+                                else this.enemies.push(new GoldDigger(this, this.enemyHealthAmp, this.enemyDamageAmp, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
                 
                             }
                         } else {
                             for(let i = 0; i < 5; i++) {
                                 let encounter = Math.random();
                     
-                                if(encounter < 0.3) this.enemies.push(new MainEnemy1(this, enemy.healthScaling, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
-                                else if(encounter < 0.6) this.enemies.push(new MainEnemy2(this, enemy.healthScaling, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
-                                else if( encounter < 0.9) this.enemies.push(new MainEnemy3(this, enemy.healthScaling, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
-                                else this.enemies.push(new GoldDigger(this, enemy.healthScaling, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
+                                if(encounter < 0.3) this.enemies.push(new MainEnemy1(this, this.enemyHealthAmp, this.enemyDamageAmp, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
+                                else if(encounter < 0.6) this.enemies.push(new MainEnemy2(this, this.enemyHealthAmp, this.enemyDamageAmp, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
+                                else if( encounter < 0.9) this.enemies.push(new MainEnemy3(this, this.enemyHealthAmp, this.enemyDamageAmp, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
+                                else this.enemies.push(new GoldDigger(this, this.enemyHealthAmp, this.enemyDamageAmp, enemy.x + (Math.random() * enemy.width), enemy.y + (Math.random() * enemy.height)));
                 
                             }
                         }
