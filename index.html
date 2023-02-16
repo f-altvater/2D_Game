@@ -12,6 +12,13 @@
 <body>
 
     <canvas id="playground"></canvas>
+
+    <!--Player health bar-->
+    <div id="playerHealtBar">
+        <div id="playerCurrentHealth"></div>
+    </div>
+
+    <!--pre Game Screen-->
     <div id="htmlCssWrapper">
 
         <div class="controls">
@@ -35,6 +42,56 @@
                 <p>Right Arrow</p>
             </div>
             
+        </div>
+
+        <div class="difficultySettings">
+            <div id="easyMode" onclick="returnGameMode('easy')">
+                <div class="mode">
+                    <h2>Easy Mode</h2>
+
+                    <div class="modeInfo">
+                        <p>
+                            Enemies passing you neither deal damage<br>
+                            nor steal gold.<br>
+                            Enemies do not scale with the amount of<br>
+                            waves you have cleared.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="normalMode" onclick="returnGameMode('normal')">
+                <div class="mode">
+                    <h2>Normal Mode</h2>
+
+                    <div class="modeInfo">
+                        <p>
+                            Enemies passing you deal some damage and<br>
+                            steal some gold. Enemies crashing into you<br>
+                            steal more gold and deal more damage.<br>
+                            Enemies health and damage dealt scale with<br>
+                            the amount of waves you have cleared.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="noMercy" onclick="returnGameMode('noMercy')">
+                <div class="mode">
+                    <div class="mode" >
+                    <h2>No Mercy</h2>
+                    
+                    <div class="modeInfo">
+                        <p>
+                            Enemies passing you are treated<br>
+                            as if they have crashed into you.<br>
+                            Enemies lose less gold when killed.<br>
+                            You do not regenerate health after<br>
+                            waves, only if you get a health upgrade.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="startGame"><h1>Press Spacebar to start</h1></div>
