@@ -1,3 +1,7 @@
+html{
+    font-size: 16px;
+}
+
 *{
     margin: 0;
     padding: 0;
@@ -6,6 +10,22 @@
 
 body{
     background-color: rgb(20, 20, 20);
+    font-family: 'Helvetica';
+}
+
+h1{
+    color: white;
+    font-size: 3rem;
+}
+
+h2{
+    color: white;
+    font-size: 2rem;
+}
+
+p{
+    color: white;
+    font-size: 1.5rem;
 }
 
 #playground{
@@ -17,7 +37,60 @@ body{
     background: linear-gradient(rgb(20, 20, 30), rgb(30, 30, 40));
     max-width: 100%;
     max-height: 100%;
+    opacity: 0.1;
 } 
+
+.arrowKeysImage{
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    margin: 25px;
+}
+
+.spacebarImage{
+    width: 150px;
+    height: 150px;
+    display: inline-block;
+}
+
+#htmlCssWrapper{
+    width: 100%;
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.startGame{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.controls{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+
+.controls h2{
+    width: 100%;
+    text-align: center;
+}
+
+.shoot, .left, .right{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
 
 img{
     display: none;
