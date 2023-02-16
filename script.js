@@ -1213,14 +1213,21 @@ function returnGameMode(mode){
         document.getElementById('easyMode').style.boxShadow = '0px 0px 5px 5px #43b02a';
         document.getElementById('normalMode').style.boxShadow = 'none';
         document.getElementById('noMercy').style.boxShadow = 'none';
+            
+        document.getElementsByClassName('startGame')[0].style.display = 'flex';
+
     } else if(mode === 'normal'){
         document.getElementById('normalMode').style.boxShadow = '0px 0px 5px 5px white';
         document.getElementById('easyMode').style.boxShadow = 'none';
         document.getElementById('noMercy').style.boxShadow = 'none';
+
+        document.getElementsByClassName('startGame')[0].style.display = 'flex';
     } else if(mode === 'noMercy'){
         document.getElementById('noMercy').style.boxShadow = '0px 0px 5px 5px  #da291c ';
         document.getElementById('normalMode').style.boxShadow = 'none';
         document.getElementById('easyMode').style.boxShadow = 'none';
+
+        document.getElementsByClassName('startGame')[0].style.display = 'flex';
     }
 };
 

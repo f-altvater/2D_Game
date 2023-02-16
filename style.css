@@ -76,7 +76,7 @@ p{
 
 .startGame{
     width: 100%;
-    display: flex;
+    display: none;
     justify-content: center;
     margin-top: 30px;
 }
