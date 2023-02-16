@@ -8,8 +8,8 @@ function game() {
     const playground = document.getElementById('playground');
     const controls = document.getElementById('htmlCssWrapper');
     const ctx = playground.getContext('2d');
-    const playerHealthBar = document.getElementById('playerHealthBar');
-    const playerCurrentHealth = document.getElementById('playerHealthBar');
+    //const playerHealthBar = document.getElementById('playerHealthBar');
+    //const playerCurrentHealth = document.getElementById('playerHealthBar');
     playground.width = 750;
     playground.height = 1000;
     let lastTime;
@@ -42,7 +42,7 @@ function game() {
                     playground.style.display = 'block';
                     this.game.gamePlays = !this.game.gamePlays;
                     removeWindowListener();
-                    playerHealthBar.style.display = 'block';
+                    //playerHealthBar.style.display = 'block';
 
                     console.log(this.game.gameMode);
 
@@ -321,7 +321,7 @@ function game() {
 
                 context.drawImage(this.image, this.x, this.y, this.width, this.height);
 
-                playerCurrentHealth.style.width = '' + this.health / (this.baseHealth + this.healthAdd) + '%';
+                //playerCurrentHealth.style.width = '' + this.health / (this.baseHealth + this.healthAdd) + '%';
             }
         }
 
