@@ -40,17 +40,6 @@ p{
     display: none;
 } 
 
-#playerHealthBar{
-    display: none;
-    width: 50%;
-    border: 1px solid grey;
-}
-
-#playerCurrentHealth{
-    width: 100%;
-    color: red
-}
-
 .arrowKeysImage{
     width: 100px;
     height: 100px;
