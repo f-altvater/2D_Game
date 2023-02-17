@@ -1,6 +1,6 @@
 window.addEventListener('click', game);
 
-let gameMode;
+let gameMode = 0;
 
 function game() {
 
@@ -35,7 +35,7 @@ function game() {
                     this.game.newWave();
 
                 } else if(input.key === ' ' && !this.game.gamePlays) {
-
+                        
                     controls.style.display = 'none';
                     playground.style.display = 'block';
                     this.game.gamePlays = !this.game.gamePlays;
@@ -240,7 +240,7 @@ function game() {
             this.x = 200;
             this.y = 890;
             this.speedX = 0;
-            this.speed = 2.5;
+            this.speed = 3;
             this.laserShot = [];
             this.rocketsShot = [];
             this.rocketInterval = 1000;
@@ -395,6 +395,10 @@ function game() {
                     this.game.player.health -= this.damage;
                     this.game.gold -= this.gold;
 
+                }
+
+                if(this.game.player.health <= 0){
+                    this.game.gameOver = true;
                 }
             }
         }
@@ -794,6 +798,7 @@ function game() {
             if(this.game.gameOver) {
                 let message1 = 'Game Over!';
                 let message2;
+                let message3 = 'Press Enter to start anew';
                 let message2xCoord;
 
                 if(this.game.waveCount > 1) {
@@ -805,9 +810,11 @@ function game() {
                 }    
 
                 context.font = '70px ' + this.fontFamily;
-                context.fillText(message1, this.game.width * 0.25, this.game.height * 0.5);
+                context.fillText(message1, this.game.width * 0.25 - 2, this.game.height * 0.5);
                 context.font = '25px ' + this.fontFamily;
-                context.fillText(message2, message2xCoord, this.game.height * 0.5 + 40);
+                context.fillText(message2, message2xCoord - 2, this.game.height * 0.5 + 40);
+                context.font = '50px ' + this.fontFamily;
+                context.fillText(message3, 90, this.game.height * 0.5 + 150);
             }
 
             context.restore();
@@ -976,7 +983,6 @@ function game() {
                                 this.gold -= enemy.gold;
                                 this.player.health -= enemy.damage;
                             }
-                            this.player.health -= enemy.damage;
                         }   
                         enemy.delete = true;
                         if(this.player.health <= 0) {
@@ -1114,6 +1120,13 @@ function game() {
                 this.enemyDamageAmp = 1;
                 this.enemyHealthAmp = 1;
                 this.enemyInterval = 1250;
+                playground.style.display = 'none';
+                gameMode = 0;
+                addWindowListener();
+                controls.style.display = 'flex';
+                document.getElementById('easyMode').style.boxShadow = 'none';
+                document.getElementById('normalMode').style.boxShadow = 'none';
+                document.getElementById('noMercy').style.boxShadow = 'none';
                 
             }
         }
@@ -1179,24 +1192,26 @@ function game() {
 
     }
 
-    let game = new Game(playground.width, playground.height, gameMode);
+    if(gameMode !== 0){
+        let game = new Game(playground.width, playground.height, gameMode);
         
-    function animate(timeStamp) {
-            
-        const deltaTime = timeStamp - lastTime;
-        lastTime = timeStamp;
-            
-        ctx.clearRect(0, 0, playground.width, playground.height);
+        function animate(timeStamp) {
+                
+            const deltaTime = timeStamp - lastTime;
+            lastTime = timeStamp;
+                
+            ctx.clearRect(0, 0, playground.width, playground.height);
 
-        if(game.gamePlays){
-           game.update(deltaTime);
-            game.draw(ctx);  
+            if(game.gamePlays){
+            game.update(deltaTime);
+                game.draw(ctx);  
+            }
+            
+            requestAnimationFrame(animate);
+            
         }
-        
-        requestAnimationFrame(animate);
-        
+        animate(0);
     }
-    animate(0);
     
 };
 
@@ -1226,4 +1241,8 @@ function returnGameMode(mode){
 
 function removeWindowListener(){
     window.removeEventListener('click', game);
+}
+
+function addWindowListener(){
+    window.addEventListener('click', game);
 }
